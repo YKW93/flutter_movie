@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'Sorts.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,13 +23,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AppBarLayout'),
+        centerTitle: true,
+        title: Text('예매율순'),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            icon: Icon(Icons.sort),
+            onSelected: choiceAction,
+            itemBuilder: (BuildContext context) {
+              return Sorts.choices.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          )
+        ],
       ),
       body: Text('내용'),
     );
+  }
+
+  void choiceAction(String choice) {
+    print(choice);
   }
 }
