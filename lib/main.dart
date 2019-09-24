@@ -23,7 +23,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   Future<Movie> _getMovieList() async {
     http.Response response =
         await http.get('http://connect-boxoffice.run.goorm.io/movies');
@@ -66,7 +65,7 @@ class _HomePageState extends State<HomePage> {
               if (snapshot.hasError)
                 return new Text('Error: ${snapshot.error}');
               else
-                return new Text(snapshot.data.movies[0].title);
+                return createListView(context, snapshot.data.movies);
           }
         },
       ),
@@ -81,6 +80,51 @@ class _HomePageState extends State<HomePage> {
     return Container(
       alignment: Alignment.center,
       child: new CircularProgressIndicator(),
+    );
+  }
+
+  Widget createListView<Movie>(BuildContext context, List<Movies> items) {
+    return ListView.separated(
+        padding: EdgeInsets.all(8.0),
+        separatorBuilder: (context, index) => Divider(
+              color: Colors.grey,
+            ),
+        itemCount: items.length,
+        itemBuilder: (context, index) => _buildCardItem(context, items[index]));
+  }
+
+  Widget _buildCardItem(BuildContext context, Movies item) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Image.network(
+          item.thumb,
+          height: 120,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(item.title,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              Row(
+                children: <Widget>[
+                  Text('평점 : ${item.userRating}'),
+                  SizedBox(width: 10),
+                  Text('예매순위 : ${item.reservationGrade}'),
+                  SizedBox(width: 10),
+                  Text('예매율 : ${item.reservationRate}')
+                ],
+              ),
+              SizedBox(height: 10),
+              Text('개봉일 : ${item.date}')
+            ],
+          ),
+        )
+      ],
     );
   }
 }
