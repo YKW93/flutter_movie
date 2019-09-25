@@ -34,6 +34,7 @@ class _GridPageState extends State<GridPage> {
 
     return GridView.builder(
         scrollDirection: Axis.vertical,
+        itemCount: items.length,
         gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, childAspectRatio: (9 / 16)),
         itemBuilder: (context, index) => _buildItem(context, items[index]));
