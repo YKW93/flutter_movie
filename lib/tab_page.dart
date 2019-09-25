@@ -20,11 +20,12 @@ class TabPage extends StatefulWidget {
 
 class _TabPageState extends State<TabPage> {
 
-  int _selectedIndex = 0;
+  int _selectedTabIndex = 0;
+  int _selectedSortIndex = 0;
 
-  Future<Movie> _getMovieList() async {
+  Future<Movie> _getMovieList(int type) async {
     http.Response response =
-    await http.get('http://connect-boxoffice.run.goorm.io/movies');
+    await http.get('http://connect-boxoffice.run.goorm.io/movies?order_type=$type');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -38,23 +39,23 @@ class _TabPageState extends State<TabPage> {
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('예매율순'),
+        title: Text('${SortHelper.getTitle(_selectedSortIndex)}순'),
         actions: <Widget>[
-          PopupMenuButton<String>(
+          PopupMenuButton<Sorts>(
             icon: Icon(Icons.sort),
             onSelected: clickFilter,
             itemBuilder: (BuildContext context) {
-              return Sorts.filters.map((String sort) {
-                return PopupMenuItem<String>(
+              return Sorts.values.map((Sorts sort) {
+                return PopupMenuItem<Sorts>(
                   value: sort,
-                  child: Text(sort),
+                  child: Text(SortHelper.getValue(sort)),
                 );
               }).toList();
             },
           )
         ],
       ),
-      body: changePage(_selectedIndex),
+      body: changePage(_selectedTabIndex, _selectedSortIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -62,25 +63,27 @@ class _TabPageState extends State<TabPage> {
           BottomNavigationBarItem(
               icon: Icon(Icons.grid_on), title: Text('Grid')),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: _selectedTabIndex,
         onTap: _onItemTapped,
       ),
     );
   }
 
-  void clickFilter(String sort) {
-    print(sort);
+  void clickFilter(Sorts sort) {
+    setState(() {
+      _selectedSortIndex = sort.index;
+    });
   }
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedTabIndex = index;
     });
   }
 
-  Widget changePage(int index) {
+  Widget changePage(int index, int type) {
     return FutureBuilder<Movie>(
-      future: _getMovieList(),
+      future: _getMovieList(type),
       builder: (BuildContext context, AsyncSnapshot<Movie> snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
