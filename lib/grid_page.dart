@@ -24,13 +24,6 @@ class _GridPageState extends State<GridPage> {
   }
 
   Widget _createGrideView<Movie>(BuildContext context, List<Movies> items) {
-    var size = MediaQuery
-        .of(context)
-        .size;
-
-    /*24 is for notification bar on Android*/
-    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    final double itemWidth = size.width / 2;
 
     return GridView.builder(
         scrollDirection: Axis.vertical,
@@ -44,10 +37,8 @@ class _GridPageState extends State<GridPage> {
     return Container(
       padding: const EdgeInsets.all(8),
       child: Column(
-        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          AspectRatio(
-            aspectRatio: .8,
+          Expanded(
             child: Image.network(item.thumb, fit: BoxFit.fill),
           ),
           SizedBox(height: 8),
