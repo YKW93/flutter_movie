@@ -19,37 +19,23 @@ class _MovideDetailPageState extends State<MovideDetailPage> {
   Widget _testWidget() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        Flexible(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text('예매율'),
-                Text('1위 35.5%')
-              ],
-            ),
-            flex: 1),
-        Flexible(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text('평점'),
-              Text('7,98'),
-              Text('별별별별별'),
-            ],
-          ),
-          flex: 1,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[Text('예매율'), Text('1위 35.5%')],
         ),
-        Flexible(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text('누적관객수'),
-              Text('11,676,822')
-            ],
-          ),
-          flex: 1,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text('평점'),
+            Text('7,98'),
+            Text('별별별별별'),
+          ],
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[Text('누적관객수'), Text('11,676,822')],
         ),
       ],
     );
