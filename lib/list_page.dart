@@ -35,7 +35,7 @@ class _ListPageState extends State<ListPage> {
             child: _buildCardItem(context, items[index]),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return MovideDetailPage();
+                return MovieDetailPage(_items[index].id);
               }));
             },
           );
