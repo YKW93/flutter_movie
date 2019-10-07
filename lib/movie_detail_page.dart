@@ -307,10 +307,38 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget _setReviewWidget(Comments data) {
-    return Row(
-      children: <Widget>[
-        Text(data.contents)
-      ],
-    )
+    return Container(
+      margin: EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(
+            Icons.person_pin,
+            size: 50.0,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Text(data.writer),
+                  RatingBarIndicator(
+                    rating: data.rating / 2,
+                    itemSize: 20,
+                    itemBuilder: (context, index) =>
+                        Icon(Icons.star, color: Colors.amber),
+                  ),
+                ],
+              ),
+              Text(data.timestamp.toString()),
+              Text(data.contents),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
