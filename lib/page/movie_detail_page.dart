@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart';
 
 import 'package:flutter_movie/model/response/comment_response.dart';
 import 'package:flutter_movie/model/response/movie_info_response.dart';
@@ -277,14 +278,62 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             ],
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: _commentResponse.comments
-              .map((comment) => Text(comment.contents))
-              .toList(),
-        ),
+        _buildListViewForComment()
       ],
     );
+  }
+
+  Widget _buildListViewForComment() {
+    return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        padding: EdgeInsets.all(10.0),
+        itemCount: _commentResponse.comments.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _buildItemForComment(_commentResponse.comments[index]);
+        });
+  }
+
+  Widget _buildItemForComment(Comment comment) {
+    return Container(
+      margin: EdgeInsets.all(10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Icon(
+            Icons.person_pin,
+            size: 50.0,
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Text(comment.writer),
+                  SizedBox(width: 5),
+                  RatingBarIndicator(
+                    rating: comment.rating / 2,
+                    itemSize: 18,
+                    itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber),
+                  )
+                ],
+              ),
+              Text(_convertTimeStampToDataTime(comment.timestamp)),
+              SizedBox(height: 5),
+              Text(comment.contents)
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  String _convertTimeStampToDataTime(double timestamp) {
+    var format = DateFormat('yyyy-MM-dd HH:mm:ss');
+    return format.format(DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000));
   }
 
   void _requestInfo() async {
