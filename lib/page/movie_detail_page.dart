@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_movie/model/response/comment_response.dart';
+import 'movie_comment_page.dart';
 import 'package:flutter_movie/model/response/movie_info_response.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -272,7 +273,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 icon: Icon(Icons.create),
                 color: Colors.blue,
                 onPressed: () {
-                  print('hh');
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MovieCommentPage(_movieInfoResponse.title),
+                    ),
+                  );
                 },
               )
             ],
