@@ -11,26 +11,49 @@ class MovieCommentPage extends StatefulWidget {
 }
 
 class _MovieCommentPageState extends State<MovieCommentPage> {
+  final GlobalKey<ScaffoldState> mScaffoldState = new GlobalKey<ScaffoldState>();
   double _rating = 5;
+  String _nickName = "";
+  String _comment = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: mScaffoldState,
       appBar: AppBar(
         title: Text('한줄평 작성'),
+        actions: <Widget>[_buildActionButton()],
       ),
       body: Container(
         padding: EdgeInsets.all(10),
         child: Column(
+          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             _buildMovieTitle(),
             _buildUserRating(),
             _buildHorizontalDivider(),
+            _buildNickNameInputForm(),
             _buildCommentInputForm()
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildActionButton() {
+    return IconButton(
+      icon: Icon(Icons.save_alt, color: Colors.white, size: 25),
+      onPressed: () {
+        if (_nickName.isEmpty || _comment.isEmpty) {
+          final snackBar = SnackBar(content: Text('모든 정보를 입력해주세요.'));
+          mScaffoldState.currentState.showSnackBar(snackBar);
+        }
+        else {
+          // TODO 서버로 전송
+        }
+      },
     );
   }
 
@@ -58,11 +81,10 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
             itemSize: 60,
             allowHalfRating: true,
             itemCount: 5,
-            itemBuilder: (context, _) =>
-                Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
+            itemBuilder: (context, _) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
             onRatingUpdate: (rating) {
               setState(() {
                 _rating = rating;
@@ -84,37 +106,41 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
     );
   }
 
+  Widget _buildNickNameInputForm() {
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10),
+      child: TextFormField(
+        onChanged: (value) => _nickName = value,
+        maxLines: 1,
+        maxLength: 20,
+        decoration: InputDecoration(
+            hintText: '닉네임을 입력해주세요',
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+              borderSide: BorderSide(),
+            )),
+      ),
+    );
+  }
+
   Widget _buildCommentInputForm() {
-    return Column(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(left: 10, right: 10),
-          child: TextFormField(
-            maxLines: 1,
-            maxLength: 20,
-            decoration: InputDecoration(
-                hintText: '닉네임을 입력해주세요',
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(),
-                )),
-          ),
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
+        child: TextFormField(
+          onChanged: (value) => _comment = value,
+          maxLines: null,
+          maxLength: 100,
+          decoration: InputDecoration(
+              hintText: '한줄평을 작성해주세요',
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(),
+              )),
         ),
-        Expanded(
-          child: TextFormField(
-            maxLines: 1,
-            maxLength: 20,
-            decoration: InputDecoration(
-                hintText: '닉네임을 입력해주세요',
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide(),
-                )),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
