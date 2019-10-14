@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:rating_bar/rating_bar.dart';
+import 'package:flutter_movie/model/response/comment_response.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MovieCommentPage extends StatefulWidget {
   final movieName;
+  final movieId;
 
-  MovieCommentPage(this.movieName);
+  MovieCommentPage(this.movieName, this.movieId);
 
   @override
   _MovieCommentPageState createState() => _MovieCommentPageState();
@@ -12,9 +16,9 @@ class MovieCommentPage extends StatefulWidget {
 
 class _MovieCommentPageState extends State<MovieCommentPage> {
   final GlobalKey<ScaffoldState> mScaffoldState = new GlobalKey<ScaffoldState>();
-  double _rating = 5;
-  String _nickName = "";
-  String _comment = "";
+  double _rating = 5.0;
+  String _writer = "";
+  String _contents = "";
 
   @override
   Widget build(BuildContext context) {
@@ -46,15 +50,31 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
     return IconButton(
       icon: Icon(Icons.save_alt, color: Colors.white, size: 25),
       onPressed: () {
-        if (_nickName.isEmpty || _comment.isEmpty) {
-          final snackBar = SnackBar(content: Text('모든 정보를 입력해주세요.'));
-          mScaffoldState.currentState.showSnackBar(snackBar);
+        if (_writer.isEmpty || _contents.isEmpty) {
+          _showSnackBar('모든 정보를 입력해주세요.');
         }
         else {
-          // TODO 서버로 전송
+          postComment();
         }
       },
     );
+  }
+
+  _showSnackBar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    mScaffoldState.currentState.showSnackBar(snackBar);
+  }
+
+  postComment() async {
+    final currentTime = new DateTime.now().millisecondsSinceEpoch.toDouble() / 1000;
+    Comment commentRequest = Comment(timestamp: currentTime, movieId: widget.movieId, rating: _rating, contents: _contents, writer: _writer);
+    http.post('http://connect-boxoffice.run.goorm.io/comment', body: jsonEncode(commentRequest.toMap())).then((response) {
+      if (response.statusCode == 200) {
+        Navigator.pop(context, 'success');
+      } else {
+        _showSnackBar('잠시 후 다시 시도해주세요.');
+      }
+    });
   }
 
   Widget _buildMovieTitle() {
@@ -103,7 +123,7 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
     return Container(
       margin: EdgeInsets.only(left: 10, right: 10),
       child: TextFormField(
-        onChanged: (value) => _nickName = value,
+        onChanged: (value) => _writer = value,
         maxLines: 1,
         maxLength: 20,
         decoration: InputDecoration(
@@ -122,7 +142,7 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
       child: Container(
         margin: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
         child: TextFormField(
-          onChanged: (value) => _comment = value,
+          onChanged: (value) => _contents = value,
           maxLines: null,
           maxLength: 100,
           decoration: InputDecoration(

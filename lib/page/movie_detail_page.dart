@@ -21,6 +21,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   String _movieTitle = '';
   MovieInfoResponse _movieInfoResponse;
   CommentResponse _commentResponse;
+  Comment _userCommentData;
 
   @override
   void initState() {
@@ -277,12 +278,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 icon: Icon(Icons.create),
                 color: Colors.blue,
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          MovieCommentPage(_movieInfoResponse.title),
-                    ),
-                  );
+                  _navigateAndDisplayMovieComment(context);
                 },
               )
             ],
@@ -291,6 +287,19 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         _buildListViewForComment()
       ],
     );
+  }
+
+  _navigateAndDisplayMovieComment(BuildContext context)  async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MovieCommentPage(
+              _movieInfoResponse.title, _movieInfoResponse.id)),
+    );
+
+    if (result != null) {
+        _requestInfo();
+    }
   }
 
   Widget _buildListViewForComment() {
@@ -325,7 +334,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   Text(comment.writer),
                   SizedBox(width: 5),
                   RatingBar.readOnly(
-                    initialRating: _movieInfoResponse.userRating / 2.0,
+                    initialRating: comment.rating,
                     filledIcon: Icons.star,
                     emptyIcon: Icons.star_border,
                     halfFilledIcon: Icons.star_half,

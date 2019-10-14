@@ -32,14 +32,14 @@ class Comment {
   String contents;
   String writer;
 
-  Comment(
+  Comment({
     this.timestamp,
     this.id,
     this.movieId,
     this.rating,
     this.contents,
     this.writer,
-  );
+  });
 
   Comment.fromJson(Map<String, dynamic> json) {
     timestamp = json['timestamp'];
