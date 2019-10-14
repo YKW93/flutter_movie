@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_movie/model/response/comment_response.dart';
 import 'movie_comment_page.dart';
 import 'package:flutter_movie/model/response/movie_info_response.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:rating_bar/rating_bar.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final String movieId;
@@ -134,10 +134,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         SizedBox(height: 10),
         Text(_movieInfoResponse.userRating.toString()),
         SizedBox(height: 10),
-        RatingBarIndicator(
-          rating: _movieInfoResponse.userRating / 2,
-          itemSize: 20,
-          itemBuilder: (_, __) => Icon(Icons.star, color: Colors.amber),
+        RatingBar.readOnly(
+          initialRating: _movieInfoResponse.userRating / 2.0,
+          filledIcon: Icons.star,
+          emptyIcon: Icons.star_border,
+          halfFilledIcon: Icons.star_half,
+          filledColor: Colors.amber,
+          isHalfAllowed: true,
+          size: 20,
         ),
       ],
     );
@@ -275,7 +279,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => MovieCommentPage(_movieInfoResponse.title),
+                      builder: (_) =>
+                          MovieCommentPage(_movieInfoResponse.title),
                     ),
                   );
                 },
@@ -319,11 +324,15 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 children: <Widget>[
                   Text(comment.writer),
                   SizedBox(width: 5),
-                  RatingBarIndicator(
-                    rating: comment.rating / 2,
-                    itemSize: 18,
-                    itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber),
-                  )
+                  RatingBar.readOnly(
+                    initialRating: _movieInfoResponse.userRating / 2.0,
+                    filledIcon: Icons.star,
+                    emptyIcon: Icons.star_border,
+                    halfFilledIcon: Icons.star_half,
+                    filledColor: Colors.amber,
+                    isHalfAllowed: true,
+                    size: 20,
+                  ),
                 ],
               ),
               Text(_convertTimeStampToDataTime(comment.timestamp)),
@@ -338,7 +347,8 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   String _convertTimeStampToDataTime(double timestamp) {
     var format = DateFormat('yyyy-MM-dd HH:mm:ss');
-    return format.format(DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000));
+    return format
+        .format(DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000));
   }
 
   void _requestInfo() async {

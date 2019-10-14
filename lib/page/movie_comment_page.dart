@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:rating_bar/rating_bar.dart';
 
 class MovieCommentPage extends StatefulWidget {
   final movieName;
@@ -75,21 +75,14 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           RatingBar(
+            onRatingChanged: (rating) => setState(() => _rating = rating),
             initialRating: 5,
-            direction: Axis.horizontal,
-            glow: false,
-            itemSize: 60,
-            allowHalfRating: true,
-            itemCount: 5,
-            itemBuilder: (context, _) => Icon(
-              Icons.star,
-              color: Colors.amber,
-            ),
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-            },
+            filledIcon: Icons.star,
+            emptyIcon: Icons.star_border,
+            halfFilledIcon: Icons.star_half,
+            isHalfAllowed: true,
+            filledColor: Colors.amber,
+            size: 48,
           ),
           Text(_rating.toString())
         ],
