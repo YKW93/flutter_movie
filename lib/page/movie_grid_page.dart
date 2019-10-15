@@ -21,11 +21,11 @@ class MovieGridPage extends StatelessWidget {
         childAspectRatio: (9 / 16),
       ),
       itemCount: movies.length,
-      itemBuilder: (context, index) => _buildItemAt(context, index),
+      itemBuilder: (context, index) => _buildItem(context, index: index),
     );
   }
 
-  Widget _buildItemAt(BuildContext context, int index) {
+  Widget _buildItem(BuildContext context, {@required int index}) {
     final movie = movies[index];
     return InkWell(
       onTap: () {
@@ -40,11 +40,32 @@ class MovieGridPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: Image.network(movie.thumb, fit: BoxFit.fill),
+              child: Stack(
+                alignment: Alignment.topRight,
+                children: <Widget>[
+                  Image.network(
+                    movie.thumb,
+                    fit: BoxFit.fill,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(8),
+                    child: _buildGradeImage(movie.grade),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 8),
-            Text(movie.title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            FittedBox(
+              child: Text(
+                movie.title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             SizedBox(height: 8),
             Text(
                 '${movie.reservationGrade}위(${movie.userRating}) / ${movie.reservationRate}%'),
@@ -54,5 +75,20 @@ class MovieGridPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildGradeImage(int grade) {
+    switch (grade) {
+      case 0:
+        return Image.asset("asset/ic_allages.png");
+      case 12:
+        return Image.asset("asset/ic_12.png");
+      case 15:
+        return Image.asset("asset/ic_15.png");
+      case 19:
+        return Image.asset("asset/ic_19.png");
+      default:
+        return null;
+    }
   }
 }

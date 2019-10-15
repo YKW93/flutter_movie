@@ -7,6 +7,7 @@ class MovieListPage extends StatelessWidget {
   final List<Movie> movies;
 
   MovieListPage(this.movies);
+
   @override
   Widget build(BuildContext context) {
     return _buildListView(context);
@@ -19,7 +20,7 @@ class MovieListPage extends StatelessWidget {
       itemCount: movies.length,
       itemBuilder: (context, index) {
         return InkWell(
-          child: _buildItemForMovie(movies[index]),
+          child: _buildItem(movies[index]),
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -32,7 +33,7 @@ class MovieListPage extends StatelessWidget {
     );
   }
 
-  Widget _buildItemForMovie(Movie movie) {
+  Widget _buildItem(Movie movie) {
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -41,23 +42,29 @@ class MovieListPage extends StatelessWidget {
           Image.network(movie.thumb, height: 120),
           Padding(
             padding: EdgeInsets.all(8.0),
-            child: _buildTextColumnForMovie(movie),
+            child: _buildTextColumn(movie),
           )
         ],
       ),
     );
   }
 
-  Widget _buildTextColumnForMovie(Movie movie) {
+  Widget _buildTextColumn(Movie movie) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          movie.title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          children: <Widget>[
+            Text(
+              movie.title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(width: 8),
+            _buildGradeImage(movie.grade),
+          ],
         ),
         SizedBox(height: 10),
         Row(
@@ -73,5 +80,20 @@ class MovieListPage extends StatelessWidget {
         Text('개봉일 : ${movie.date}')
       ],
     );
+  }
+
+  Widget _buildGradeImage(int grade) {
+    switch (grade) {
+      case 0:
+        return Image.asset("asset/ic_allages.png");
+      case 12:
+        return Image.asset("asset/ic_12.png");
+      case 15:
+        return Image.asset("asset/ic_15.png");
+      case 19:
+        return Image.asset("asset/ic_19.png");
+      default:
+        return null;
+    }
   }
 }
