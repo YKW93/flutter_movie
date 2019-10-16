@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/widget/star_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -6,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_movie/model/response/comment_response.dart';
 import 'movie_comment_page.dart';
 import 'package:flutter_movie/model/response/movie_info_response.dart';
-import 'package:rating_bar/rating_bar.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final String movieId;
@@ -21,7 +21,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   String _movieTitle = '';
   MovieInfoResponse _movieInfoResponse;
   CommentResponse _commentResponse;
-  Comment _userCommentData;
 
   @override
   void initState() {
@@ -65,23 +64,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           children: <Widget>[
             Image.network(_movieInfoResponse.image, height: 180),
             SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  _movieInfoResponse.title,
-                  style: TextStyle(fontSize: 22),
-                ),
-                Text(
-                  '${_movieInfoResponse.date} 개봉',
-                  style: TextStyle(fontSize: 16),
-                ),
-                Text(
-                  '${_movieInfoResponse.genre} / ${_movieInfoResponse.duration}분',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
+            _buildMovieSummaryTextColumn(),
           ],
         ),
         SizedBox(height: 10),
@@ -99,9 +82,28 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     );
   }
 
+  Widget _buildMovieSummaryTextColumn() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          _movieInfoResponse.title,
+          style: TextStyle(fontSize: 22),
+        ),
+        Text(
+          '${_movieInfoResponse.date} 개봉',
+          style: TextStyle(fontSize: 16),
+        ),
+        Text(
+          '${_movieInfoResponse.genre} / ${_movieInfoResponse.duration}분',
+          style: TextStyle(fontSize: 16),
+        ),
+      ],
+    );
+  }
+
   Widget _buildReservationRate() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -135,13 +137,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         SizedBox(height: 10),
         Text(_movieInfoResponse.userRating.toString()),
         SizedBox(height: 10),
-        RatingBar.readOnly(
-          initialRating: _movieInfoResponse.userRating / 2.0,
-          filledIcon: Icons.star,
-          emptyIcon: Icons.star_border,
-          halfFilledIcon: Icons.star_half,
-          filledColor: Colors.amber,
-          isHalfAllowed: true,
+        StarRatingBar(
+          rating: _movieInfoResponse.userRating.toInt(),
+          isUserInteractionEnabled: false,
           size: 20,
         ),
       ],
@@ -149,6 +147,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   Widget _buildAudience() {
+    final numberFormatter = NumberFormat.decimalPattern();
     return Column(
       children: <Widget>[
         Text(
@@ -159,7 +158,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
           ),
         ),
         SizedBox(height: 10),
-        Text(_movieInfoResponse.audience.toString()),
+        Text(numberFormatter.format(_movieInfoResponse.audience)),
       ],
     );
   }
@@ -177,7 +176,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(top: 10, bottom: 10),
+          margin: EdgeInsets.symmetric(vertical: 10),
           width: double.infinity,
           height: 10,
           color: Colors.grey.shade400,
@@ -205,7 +204,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(top: 10, bottom: 10),
+          margin: EdgeInsets.symmetric(vertical: 10),
           width: double.infinity,
           height: 10,
           color: Colors.grey.shade400,
@@ -242,7 +241,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 10),
-                  Text(_movieInfoResponse.actor),
+                  Expanded(
+                    child: Text(_movieInfoResponse.actor),
+                  ),
                 ],
               ),
             ],
@@ -257,7 +258,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(top: 10, bottom: 10),
+          margin: EdgeInsets.symmetric(vertical: 10),
           width: double.infinity,
           height: 10,
           color: Colors.grey.shade400,
@@ -277,43 +278,28 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               IconButton(
                 icon: Icon(Icons.create),
                 color: Colors.blue,
-                onPressed: () {
-                  _navigateAndDisplayMovieComment(context);
-                },
+                onPressed: () => _presentCommentPage(context),
               )
             ],
           ),
         ),
-        _buildListViewForComment()
+        _buildCommentListView()
       ],
     );
   }
 
-  _navigateAndDisplayMovieComment(BuildContext context)  async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => MovieCommentPage(
-              _movieInfoResponse.title, _movieInfoResponse.id)),
-    );
-
-    if (result != null) {
-        _requestInfo();
-    }
-  }
-
-  Widget _buildListViewForComment() {
+  Widget _buildCommentListView() {
     return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        padding: EdgeInsets.all(10.0),
-        itemCount: _commentResponse.comments.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _buildItemForComment(_commentResponse.comments[index]);
-        });
+      shrinkWrap: true,
+      primary: false,
+      padding: EdgeInsets.all(10.0),
+      itemCount: _commentResponse.comments.length,
+      itemBuilder: (_, index) =>
+          _buildItem(comment: _commentResponse.comments[index]),
+    );
   }
 
-  Widget _buildItemForComment(Comment comment) {
+  Widget _buildItem({@required Comment comment}) {
     return Container(
       margin: EdgeInsets.all(10),
       child: Row(
@@ -321,7 +307,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         children: <Widget>[
           Icon(
             Icons.person_pin,
-            size: 50.0,
+            size: 50,
           ),
           SizedBox(
             width: 10,
@@ -333,13 +319,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                 children: <Widget>[
                   Text(comment.writer),
                   SizedBox(width: 5),
-                  RatingBar.readOnly(
-                    initialRating: comment.rating,
-                    filledIcon: Icons.star,
-                    emptyIcon: Icons.star_border,
-                    halfFilledIcon: Icons.star_half,
-                    filledColor: Colors.amber,
-                    isHalfAllowed: true,
+                  StarRatingBar(
+                    rating: comment.rating.toInt(),
+                    isUserInteractionEnabled: false,
                     size: 20,
                   ),
                 ],
@@ -355,9 +337,25 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   }
 
   String _convertTimeStampToDataTime(double timestamp) {
-    var format = DateFormat('yyyy-MM-dd HH:mm:ss');
-    return format
+    final dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    return dateFormatter
         .format(DateTime.fromMillisecondsSinceEpoch(timestamp.toInt() * 1000));
+  }
+
+  void _presentCommentPage(BuildContext context) async {
+    final isCommentSentAndPopped = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MovieCommentPage(
+          _movieInfoResponse.title,
+          _movieInfoResponse.id,
+        ),
+      ),
+    );
+
+    if (isCommentSentAndPopped) {
+      _requestInfo();
+    }
   }
 
   void _requestInfo() async {
@@ -382,7 +380,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       final movieInfoResponse = MovieInfoResponse.fromJson(jsonData);
       return movieInfoResponse;
     }
-    return Future.value();
+    return null;
   }
 
   Future<CommentResponse> _requestComments() async {
@@ -393,6 +391,6 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
       final commentResponse = CommentResponse.fromJson(jsonData);
       return commentResponse;
     }
-    return Future.value();
+    return null;
   }
 }
