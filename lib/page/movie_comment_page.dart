@@ -33,15 +33,17 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
       body: WillPopScope(
         child: Container(
           padding: EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildMovieTitle(),
-              _buildUserRating(),
-              _buildHorizontalDivider(),
-              _buildNickNameInputForm(),
-              _buildCommentInputForm()
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _buildMovieTitle(),
+                _buildUserRating(),
+                _buildHorizontalDivider(),
+                _buildNickNameInputForm(),
+                _buildCommentInputForm()
+              ],
+            ),
           ),
         ),
         onWillPop: () {
@@ -124,20 +126,18 @@ class _MovieCommentPageState extends State<MovieCommentPage> {
   }
 
   Widget _buildCommentInputForm() {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
-        child: TextFormField(
-          onChanged: (text) => _contents = text,
-          maxLines: null,
-          maxLength: 100,
-          decoration: InputDecoration(
-            hintText: '한줄평을 작성해주세요',
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(),
-            ),
+    return Container(
+      margin: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 10),
+      child: TextFormField(
+        onChanged: (text) => _contents = text,
+        maxLines: null,
+        maxLength: 100,
+        decoration: InputDecoration(
+          hintText: '한줄평을 작성해주세요',
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(),
           ),
         ),
       ),

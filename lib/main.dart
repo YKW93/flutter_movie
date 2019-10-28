@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_movie/page/tab_page.dart';
 
 void main() {
-  debugPaintSizeEnabled = true;
+  debugPaintSizeEnabled = false;
   runApp(MyApp());
 }
 
